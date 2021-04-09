@@ -19,8 +19,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'docopt', 'numpy', 'oanda-cli', 'pandas', 'pyyaml', 'redis',
-        'scikit-learn', 'statsmodels', 'v20'
+        'docopt', 'pandas', 'pandas-datareader'
     ],
     entry_points={'console_scripts': ['tifft=tifft.cli:main']},
     classifiers=[
