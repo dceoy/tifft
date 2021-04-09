@@ -1,0 +1,15 @@
+---
+version: '3'
+
+services:
+  tifft:
+    container_name: tifft
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dceoy/tifft:latest
+    volumes:
+      - ${PWD}:/wd
+    working_dir: /wd
+    entrypoint:
+      - tifft
