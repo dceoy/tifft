@@ -41,6 +41,7 @@ def main():
     if args['fred']:
         fetch_df_from_fred(
             symbols=args['<symbol>'], output_csv_path=args['--csv'],
+            start_date=args['--start'], end_date=args['--end'],
             max_rows=args['--max-rows']
         )
 
