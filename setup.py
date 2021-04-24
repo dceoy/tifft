@@ -18,9 +18,7 @@ setup(
     url='https://github.com/dceoy/tifft',
     packages=find_packages(),
     include_package_data=True,
-    install_requires=[
-        'docopt', 'pandas', 'pandas-datareader'
-    ],
+    install_requires=['docopt', 'pandas', 'pandas-datareader'],
     entry_points={'console_scripts': ['tifft=tifft.cli:main']},
     classifiers=[
         'Development Status :: 4 - Beta',

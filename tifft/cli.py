@@ -13,7 +13,7 @@ Options:
     --version           Print version and exit
     --debug, --info     Execute a command with debug|info messages
     --csv=<path>        Write data with CSV into a file
-    --start=<date>      Specify the start date
+    --start=<date>      Specify the start date (e.g., 2021-01-01)
     --end=<date>        Specify the end date
     --max-rows=<int>    Specify the max rows to display [default: 60]
 
