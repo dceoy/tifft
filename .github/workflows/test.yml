@@ -27,4 +27,4 @@ jobs:
         run: |
           tifft --version
           tifft --help
-          tifft fred --csv=df.csv DJIA SP500 NASDAQ100
+          tifft history --csv=df.csv DJIA SP500 NASDAQ100
