@@ -3,6 +3,9 @@ tifft
 
 Technical Indicators for Financial Trading
 
+[![Test](https://github.com/dceoy/tifft/actions/workflows/test.yml/badge.svg)](https://github.com/dceoy/tifft/actions/workflows/test.yml)
+[![Upload Python Package](https://github.com/dceoy/tifft/actions/workflows/python-publish.yml/badge.svg)](https://github.com/dceoy/tifft/actions/workflows/python-publish.yml)
+
 Installation
 ------------
 
