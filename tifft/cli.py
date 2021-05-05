@@ -6,13 +6,13 @@ Usage:
     tifft -h|--help
     tifft --version
     tifft history [--debug|--info] [--max-rows=<int>] [--start=<date>]
-        [--end=<date>] [--csv=<path>] <symbol>...
+        [--end=<date>] [--output-csv=<path>] <symbol>...
     tifft macd [--debug|--info] [--max-rows=<int>] [--start=<date>]
         [--end=<date>] [--fast-ema-span=<int>] [--slow-ema-span=<int>]
-        [--macd-ema-span=<int>] [--csv=<path>] <symbol>
+        [--macd-ema-span=<int>] [--output-csv=<path>] <symbol>
     tifft bb [--debug|--info] [--max-rows=<int>] [--start=<date>]
         [--end=<date>] [--window-size=<int>] [--sd-multiplier=<int>]
-        [--csv=<path>] <symbol>
+        [--output-csv=<path>] <symbol>
 
 Options:
     -h, --help              Print help and exit
@@ -21,7 +21,7 @@ Options:
     --max-rows=<int>        Specify the max rows to display [default: 60]
     --start=<date>          Specify the start date (e.g., 2021-01-01)
     --end=<date>            Specify the end date
-    --csv=<path>            Write data with CSV into a file
+    --output-csv=<path>     Write data with CSV into a file
     --fast-ema-span=<int>   Specify the fast EMA span [default: 12]
     --slow-ema-span=<int>   Specify the slow EMA span [default: 26]
     --macd-ema-span=<int>   Specify the MACD EMA span [default: 9]
@@ -29,12 +29,12 @@ Options:
     --sd-multiplier=<int>   Specify the SD multiplier [default: 2]
 
 Commands:
-    history                 Fetch historical data from FRED
+    history                 Fetch historical data from FRED (St. Louis Fed)
     macd                    Calculate MACD for FRED historical data
     bb                      Calculate Bollinger Bands for FRED historical data
 
 Arguments:
-    <symbol>                Data symbol
+    <symbol>                Data symbol at FRED
 """
 
 import logging
@@ -53,13 +53,13 @@ def main():
     logger.debug(f'args:{os.linesep}{args}')
     if args['history']:
         fetch_fred_data(
-            symbols=args['<symbol>'], output_csv_path=args['--csv'],
+            symbols=args['<symbol>'], output_csv_path=args['--output-csv'],
             start_date=args['--start'], end_date=args['--end'],
             max_rows=args['--max-rows']
         )
     else:
         calculate_oscillator_for_fred_data(
-            symbol=args['<symbol>'][0], output_csv_path=args['--csv'],
+            symbol=args['<symbol>'][0], output_csv_path=args['--output-csv'],
             start_date=args['--start'], end_date=args['--end'],
             max_rows=args['--max-rows'],
             oscillator=[
