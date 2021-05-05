@@ -31,6 +31,7 @@ Usage
 import numpy as np
 from tifft.bollingerbands import BollingerBandsCalculator
 from tifft.macd import MacdCalculator
+from tifft.rsi import RsiCalculator
 
 prices = np.random.randn(100) * 100
 
@@ -43,6 +44,11 @@ print(df_macd)
 bbc = BollingerBandsCalculator(window_size=20, sd_multiplier=2)
 df_bb = bbc.calculate(values=prices)
 print(df_bb)
+
+# RSI
+rsic = RsiCalculator(window_size=14, upper_line=70, lower_line=30)
+df_rsi = rsic.calculate(values=prices)
+print(df_rsi)
 ```
 
 #### Command-line Tools
@@ -59,10 +65,16 @@ Fetch the data of SP500 from FRED and calculate the MACD.
 $ tifft macd SP500
 ```
 
-Fetch the data of NASDAQ100 from FRED and calculate the Bollinger Bands.
+Fetch the data of SP500 from FRED and calculate the Bollinger Bands.
 
 ```sh
-$ tifft bb NASDAQ100
+$ tifft bb SP500
+```
+
+Fetch the data of SP500 from FRED and calculate the RSI.
+
+```sh
+$ tifft rsi SP500
 ```
 
 Run `tifft --help` for information.

@@ -29,4 +29,5 @@ jobs:
           tifft --help
           tifft history --output-csv=fred.csv DJIA SP500 NASDAQ100
           tifft macd --output-csv=macd.csv SP500
-          tifft bb --output-csv=bb.csv NASDAQ100
+          tifft bb --output-csv=bb.csv SP500
+          tifft rsi --output-csv=rsi.csv SP500
