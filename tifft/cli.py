@@ -11,8 +11,11 @@ Usage:
         [--end=<date>] [--fast-ema-span=<int>] [--slow-ema-span=<int>]
         [--macd-ema-span=<int>] [--output-csv=<path>] <symbol>
     tifft bb [--debug|--info] [--max-rows=<int>] [--start=<date>]
-        [--end=<date>] [--window-size=<int>] [--sd-multiplier=<int>]
+        [--end=<date>] [--bb-window=<int>] [--sd-multiplier=<int>]
         [--output-csv=<path>] <symbol>
+    tifft rsi [--debug|--info] [--max-rows=<int>] [--start=<date>]
+        [--end=<date>] [--rsi-window=<int>] [--upper-rsi=<int>]
+        [--lower-rsi=<int>] [--output-csv=<path>] <symbol>
 
 Options:
     -h, --help              Print help and exit
@@ -25,13 +28,17 @@ Options:
     --fast-ema-span=<int>   Specify the fast EMA span [default: 12]
     --slow-ema-span=<int>   Specify the slow EMA span [default: 26]
     --macd-ema-span=<int>   Specify the MACD EMA span [default: 9]
-    --window-size=<int>     Specify the window size [default: 20]
+    --bb-window=<int>       Specify the window size of BB [default: 20]
     --sd-multiplier=<int>   Specify the SD multiplier [default: 2]
+    --rsi-window=<int>      Specify the window size of RSI [default: 14]
+    --upper-rsi=<int>       Specify the upper line of RSI [default: 70]
+    --lower-rsi=<int>       Specify the lower line of RSI [default: 30]
 
 Commands:
     history                 Fetch historical data from FRED (St. Louis Fed)
-    macd                    Calculate MACD for FRED historical data
-    bb                      Calculate Bollinger Bands for FRED historical data
+    macd                    Calculate MACD for FRED data
+    bb                      Calculate Bollinger Bands (BB) for FRED data
+    rsi                     Calculate RSI for FRED data
 
 Arguments:
     <symbol>                Data symbol at FRED
@@ -43,7 +50,7 @@ import os
 from docopt import docopt
 
 from . import __version__
-from .datareader import calculate_oscillator_for_fred_data, fetch_fred_data
+from .datareader import calculate_indicator_for_fred_data, fetch_fred_data
 
 
 def main():
@@ -57,19 +64,30 @@ def main():
             start_date=args['--start'], end_date=args['--end'],
             max_rows=args['--max-rows']
         )
-    else:
-        calculate_oscillator_for_fred_data(
+    elif args['macd']:
+        calculate_indicator_for_fred_data(
             symbol=args['<symbol>'][0], output_csv_path=args['--output-csv'],
             start_date=args['--start'], end_date=args['--end'],
-            max_rows=args['--max-rows'],
-            oscillator=[
-                k for k, v in args.items() if k in ['macd', 'bb'] and v
-            ][0],
+            max_rows=args['--max-rows'], indicator='macd',
             fast_ema_span=args['--fast-ema-span'],
             slow_ema_span=args['--slow-ema-span'],
-            macd_ema_span=args['--macd-ema-span'],
-            window_size=args['--window-size'],
+            macd_ema_span=args['--macd-ema-span']
+        )
+    elif args['bb']:
+        calculate_indicator_for_fred_data(
+            symbol=args['<symbol>'][0], output_csv_path=args['--output-csv'],
+            start_date=args['--start'], end_date=args['--end'],
+            max_rows=args['--max-rows'], indicator='bb',
+            window_size=args['--bb-window'],
             sd_multiplier=args['--sd-multiplier']
+        )
+    elif args['rsi']:
+        calculate_indicator_for_fred_data(
+            symbol=args['<symbol>'][0], output_csv_path=args['--output-csv'],
+            start_date=args['--start'], end_date=args['--end'],
+            max_rows=args['--max-rows'], indicator='rsi',
+            window_size=args['--rsi-window'], upper_line=args['--upper-rsi'],
+            lower_line=args['--lower-rsi']
         )
 
 

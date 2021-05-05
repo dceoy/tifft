@@ -23,13 +23,13 @@ class MacdCalculator(object):
             values.to_frame(name='value') if isinstance(values, pd.Series)
             else pd.DataFrame({'value': values})
         ).assign(
-            value_ffill=lambda d: d['value'].fillna(method='ffill')
+            value_ff=lambda d: d['value'].fillna(method='ffill')
         ).assign(
             macd=lambda d: (
-                d['value_ffill'].ewm(
+                d['value_ff'].ewm(
                     span=self.__fast_ema_span, **self.__ewm_kwargs
                 ).mean()
-                - d['value_ffill'].ewm(
+                - d['value_ff'].ewm(
                     span=self.__slow_ema_span, **self.__ewm_kwargs
                 ).mean()
             )
@@ -49,4 +49,4 @@ class MacdCalculator(object):
             ).mask(
                 d['macd_ema_diff'] < 0, -1
             ).astype(int)
-        ).drop(columns=['value_ffill', 'macd_ema_diff'])
+        ).drop(columns=['value_ff', 'macd_ema_diff'])
