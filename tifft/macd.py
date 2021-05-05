@@ -24,7 +24,7 @@ class MacdCalculator(object):
             else pd.DataFrame({'value': values})
         ).assign(
             macd=lambda d: (
-                d['value'].ewm(
+                d['value'].fillna(method='ffill').ewm(
                     span=self.__fast_ema_span, **self.__ewm_kwargs
                 ).mean() - d['value'].ewm(
                     span=self.__slow_ema_span, **self.__ewm_kwargs

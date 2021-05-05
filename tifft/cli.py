@@ -10,6 +10,9 @@ Usage:
     tifft macd [--debug|--info] [--max-rows=<int>] [--start=<date>]
         [--end=<date>] [--fast-ema-span=<int>] [--slow-ema-span=<int>]
         [--macd-ema-span=<int>] [--csv=<path>] <symbol>
+    tifft bb [--debug|--info] [--max-rows=<int>] [--start=<date>]
+        [--end=<date>] [--window-size=<int>] [--sd-multiplier=<int>]
+        [--csv=<path>] <symbol>
 
 Options:
     -h, --help              Print help and exit
@@ -22,10 +25,13 @@ Options:
     --fast-ema-span=<int>   Specify the fast EMA span [default: 12]
     --slow-ema-span=<int>   Specify the slow EMA span [default: 26]
     --macd-ema-span=<int>   Specify the MACD EMA span [default: 9]
+    --window-size=<int>     Specify the window size [default: 20]
+    --sd-multiplier=<int>   Specify the SD multiplier [default: 2]
 
 Commands:
     history                 Fetch historical data from FRED
-    macd                    Fetch historical data from FRED and calculate MACD
+    macd                    Calculate MACD for FRED historical data
+    bb                      Calculate Bollinger Bands for FRED historical data
 
 Arguments:
     <symbol>                Data symbol
@@ -37,7 +43,7 @@ import os
 from docopt import docopt
 
 from . import __version__
-from .datareader import calculate_macd_from_fred_data, fetch_fred_data
+from .datareader import calculate_oscillator_for_fred_data, fetch_fred_data
 
 
 def main():
@@ -51,14 +57,19 @@ def main():
             start_date=args['--start'], end_date=args['--end'],
             max_rows=args['--max-rows']
         )
-    elif args['macd']:
-        calculate_macd_from_fred_data(
+    else:
+        calculate_oscillator_for_fred_data(
             symbol=args['<symbol>'][0], output_csv_path=args['--csv'],
             start_date=args['--start'], end_date=args['--end'],
             max_rows=args['--max-rows'],
-            fast_ema_span=int(args['--fast-ema-span']),
-            slow_ema_span=int(args['--slow-ema-span']),
-            macd_ema_span=int(args['--macd-ema-span'])
+            oscillator=[
+                k for k, v in args.items() if k in ['macd', 'bb'] and v
+            ][0],
+            fast_ema_span=args['--fast-ema-span'],
+            slow_ema_span=args['--slow-ema-span'],
+            macd_ema_span=args['--macd-ema-span'],
+            window_size=args['--window-size'],
+            sd_multiplier=args['--sd-multiplier']
         )
 
 

@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 import pandas_datareader.data as pdd
 
+from .bollingerbands import BollingerBandsCalculator
 from .macd import MacdCalculator
 
 
@@ -39,10 +40,9 @@ def _write_df_to_csv(df, csv_path):
     df.to_csv(output_csv, mode='w', header=True, sep=',')
 
 
-def calculate_macd_from_fred_data(symbol, output_csv_path=None,
-                                  start_date=None, end_date=None,
-                                  max_rows=None, fast_ema_span=12,
-                                  slow_ema_span=26, macd_ema_span=9, **kwargs):
+def calculate_oscillator_for_fred_data(oscillator, symbol,
+                                       output_csv_path=None, start_date=None,
+                                       end_date=None, max_rows=None, **kwargs):
     logger = logging.getLogger(__name__)
     pd.set_option('display.max_rows', (int(max_rows) if max_rows else None))
     print(f'>>\tGet historical data from FRED:\t{symbol}')
@@ -51,18 +51,26 @@ def calculate_macd_from_fred_data(symbol, output_csv_path=None,
         max_rows=max_rows
     )
     logger.debug(f'df_hist:{os.linesep}{df_hist}')
-    print(f'>>\tCalculate MACD:\t{symbol}')
-    macdc = MacdCalculator(
-        fast_ema_span=fast_ema_span, slow_ema_span=slow_ema_span,
-        macd_ema_span=macd_ema_span, **kwargs
-    )
-    df_macd = macdc.calculate_oscillator(values=df_hist.iloc[:, 0]).rename(
-        columns={
-            'value': symbol, 'macd': 'MACD', 'macd_ema': 'MACD_EMA',
-            'signal': 'SIGNAL'
+    if oscillator == 'macd':
+        print(f'>>\tCalculate MACD:\t{symbol}')
+        params = {
+            k: int(kwargs[k])
+            for k in ['fast_ema_span', 'slow_ema_span', 'macd_ema_span']
         }
-    )
-    logger.debug(f'df_macd:{os.linesep}{df_macd}')
-    print(df_macd)
+        calculator = MacdCalculator
+    elif oscillator == 'bb':
+        print(f'>>\tCalculate Bollinger Bands:\t{symbol}')
+        params = {k: int(kwargs[k]) for k in ['window_size', 'sd_multiplier']}
+        calculator = BollingerBandsCalculator
+    else:
+        raise ValueError(f'invalid oscillator: {oscillator}')
+    for k, v in params.items():
+        print('{0}:\t{1}'.format(k.upper().replace('_', ' '), v))
+    df_oscillator = calculator(**params).calculate_oscillator(
+        values=df_hist.iloc[:, 0]
+    ).pipe(lambda d: d.rename(columns={k: k.upper() for k in d.columns}))
+    print(f'>>\tPrint results:\t{symbol}')
+    logger.debug(f'df_oscillator:{os.linesep}{df_oscillator}')
+    print(df_oscillator)
     if output_csv_path:
-        _write_df_to_csv(df=df_macd, csv_path=output_csv_path)
+        _write_df_to_csv(df=df_oscillator, csv_path=output_csv_path)
