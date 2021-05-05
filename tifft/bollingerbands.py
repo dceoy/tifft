@@ -16,15 +16,17 @@ class BollingerBandsCalculator(object):
         self.__rolling_kwargs = kwargs
         self.__logger.debug(f'vars(self):{os.linesep}' + pformat(vars(self)))
 
-    def calculate_oscillator(self, values):
+    def calculate(self, values):
         return (
             values.to_frame(name='value') if isinstance(values, pd.Series)
             else pd.DataFrame({'value': values})
         ).assign(
-            ma=lambda d: d['value'].fillna(method='ffill').rolling(
+            value_ffill=lambda d: d['value'].fillna(method='ffill')
+        ).assign(
+            ma=lambda d: d['value_ffill'].rolling(
                 window=self.__window_size, **self.__rolling_kwargs
             ).mean(),
-            sd=lambda d: d['value'].fillna(method='ffill').rolling(
+            sd=lambda d: d['value_ffill'].rolling(
                 window=self.__window_size, **self.__rolling_kwargs
             ).std()
         ).assign(
@@ -36,4 +38,4 @@ class BollingerBandsCalculator(object):
                 d['residual'] > 0, np.floor(d['residual']),
                 np.ceil(d['residual'])
             ).astype(int)
-        ).drop(columns='residual')
+        ).drop(columns=['value_ffill', 'residual'])

@@ -18,15 +18,18 @@ class MacdCalculator(object):
         self.__ewm_kwargs = {'adjust': False, **kwargs}
         self.__logger.debug(f'vars(self):{os.linesep}' + pformat(vars(self)))
 
-    def calculate_oscillator(self, values):
+    def calculate(self, values):
         return (
             values.to_frame(name='value') if isinstance(values, pd.Series)
             else pd.DataFrame({'value': values})
         ).assign(
+            value_ffill=lambda d: d['value'].fillna(method='ffill')
+        ).assign(
             macd=lambda d: (
-                d['value'].fillna(method='ffill').ewm(
+                d['value_ffill'].ewm(
                     span=self.__fast_ema_span, **self.__ewm_kwargs
-                ).mean() - d['value'].ewm(
+                ).mean()
+                - d['value_ffill'].ewm(
                     span=self.__slow_ema_span, **self.__ewm_kwargs
                 ).mean()
             )
@@ -46,4 +49,4 @@ class MacdCalculator(object):
             ).mask(
                 d['macd_ema_diff'] < 0, -1
             ).astype(int)
-        ).drop(columns='macd_ema_diff')
+        ).drop(columns=['value_ffill', 'macd_ema_diff'])

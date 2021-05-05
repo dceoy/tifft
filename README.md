@@ -36,12 +36,12 @@ prices = np.random.randn(100) * 100
 
 # MACD
 macdc = MacdCalculator(fast_ema_span=12, slow_ema_span=26, macd_ema_span=9)
-df_macd = macdc.calculate_oscillator(values=prices)
+df_macd = macdc.calculate(values=prices)
 print(df_macd)
 
 # Bollinger Bands
 bbc = BollingerBandsCalculator(window_size=20, sd_multiplier=2)
-df_bb = bbc.calculate_oscillator(values=prices)
+df_bb = bbc.calculate(values=prices)
 print(df_bb)
 ```
 
