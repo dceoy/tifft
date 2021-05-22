@@ -5,22 +5,26 @@ Technical Indicators for Financial Trading
 Usage:
     tifft -h|--help
     tifft --version
-    tifft history [--debug|--info] [--max-rows=<int>] [--start=<date>]
-        [--end=<date>] [--output-csv=<path>] <symbol>...
-    tifft macd [--debug|--info] [--max-rows=<int>] [--start=<date>]
-        [--end=<date>] [--fast-ema-span=<int>] [--slow-ema-span=<int>]
-        [--macd-ema-span=<int>] [--output-csv=<path>] <symbol>
-    tifft bb [--debug|--info] [--max-rows=<int>] [--start=<date>]
-        [--end=<date>] [--bb-window=<int>] [--sd-multiplier=<int>]
-        [--output-csv=<path>] <symbol>
-    tifft rsi [--debug|--info] [--max-rows=<int>] [--start=<date>]
-        [--end=<date>] [--rsi-window=<int>] [--upper-rsi=<int>]
-        [--lower-rsi=<int>] [--output-csv=<path>] <symbol>
+    tifft history [--debug|--info] [--data-source=<name>] [--api-key=<token>]
+        [--start=<date>] [--end=<date>] [--max-rows=<int>]
+        [--output-csv=<path>] <name>...
+    tifft macd [--debug|--info] [--data-source=<name>] [--api-key=<token>]
+        [--start=<date>] [--end=<date>] [--max-rows=<int>]
+        [--fast-ema-span=<int>] [--slow-ema-span=<int>] [--macd-ema-span=<int>]
+        [--output-csv=<path>] <name>
+    tifft bb [--debug|--info] [--data-source=<name>] [--api-key=<token>]
+        [--start=<date>] [--end=<date>] [--max-rows=<int>] [--bb-window=<int>]
+        [--sd-multiplier=<int>] [--output-csv=<path>] <name>
+    tifft rsi [--debug|--info] [--data-source=<name>] [--api-key=<token>]
+        [--start=<date>] [--end=<date>] [--max-rows=<int>] [--rsi-window=<int>]
+        [--upper-rsi=<int>] [--lower-rsi=<int>] [--output-csv=<path>] <name>
 
 Options:
     -h, --help              Print help and exit
     --version               Print version and exit
     --debug, --info         Execute a command with debug|info messages
+    --data-source=<name>    Specify the data source [default: fred]
+    --api-key=<token>       Specify an API key for a data source
     --max-rows=<int>        Specify the max rows to display [default: 60]
     --start=<date>          Specify the start date (e.g., 2021-01-01)
     --end=<date>            Specify the end date
@@ -35,13 +39,14 @@ Options:
     --lower-rsi=<int>       Specify the lower line of RSI [default: 30]
 
 Commands:
-    history                 Fetch historical data from FRED (St. Louis Fed)
-    macd                    Calculate MACD for FRED data
-    bb                      Calculate Bollinger Bands (BB) for FRED data
-    rsi                     Calculate RSI for FRED data
+    history                 Fetch historical data from a data source
+                            (Using pandas_datareader.data.DataReader)
+    macd                    Calculate MACD
+    bb                      Calculate Bollinger Bands (BB)
+    rsi                     Calculate RSI
 
 Arguments:
-    <symbol>                Data symbol at FRED
+    <name>                  Dataset name
 """
 
 import logging
@@ -50,7 +55,7 @@ import os
 from docopt import docopt
 
 from . import __version__
-from .datareader import calculate_indicator_for_fred_data, fetch_fred_data
+from .datareader import calculate_indicator_for_remote_data, fetch_remote_data
 
 
 def main():
@@ -59,14 +64,16 @@ def main():
     logger = logging.getLogger(__name__)
     logger.debug(f'args:{os.linesep}{args}')
     if args['history']:
-        fetch_fred_data(
-            symbols=args['<symbol>'], output_csv_path=args['--output-csv'],
+        fetch_remote_data(
+            name=args['<name>'], data_source=args['--data-source'],
+            api_key=args['--api-key'], output_csv_path=args['--output-csv'],
             start_date=args['--start'], end_date=args['--end'],
             max_rows=args['--max-rows']
         )
     elif args['macd']:
-        calculate_indicator_for_fred_data(
-            symbol=args['<symbol>'][0], output_csv_path=args['--output-csv'],
+        calculate_indicator_for_remote_data(
+            name=args['<name>'][0], data_source=args['--data-source'],
+            api_key=args['--api-key'], output_csv_path=args['--output-csv'],
             start_date=args['--start'], end_date=args['--end'],
             max_rows=args['--max-rows'], indicator='macd',
             fast_ema_span=args['--fast-ema-span'],
@@ -74,16 +81,18 @@ def main():
             macd_ema_span=args['--macd-ema-span']
         )
     elif args['bb']:
-        calculate_indicator_for_fred_data(
-            symbol=args['<symbol>'][0], output_csv_path=args['--output-csv'],
+        calculate_indicator_for_remote_data(
+            name=args['<name>'][0], data_source=args['--data-source'],
+            api_key=args['--api-key'], output_csv_path=args['--output-csv'],
             start_date=args['--start'], end_date=args['--end'],
             max_rows=args['--max-rows'], indicator='bb',
             window_size=args['--bb-window'],
             sd_multiplier=args['--sd-multiplier']
         )
     elif args['rsi']:
-        calculate_indicator_for_fred_data(
-            symbol=args['<symbol>'][0], output_csv_path=args['--output-csv'],
+        calculate_indicator_for_remote_data(
+            name=args['<name>'][0], data_source=args['--data-source'],
+            api_key=args['--api-key'], output_csv_path=args['--output-csv'],
             start_date=args['--start'], end_date=args['--end'],
             max_rows=args['--max-rows'], indicator='rsi',
             window_size=args['--rsi-window'], upper_line=args['--upper-rsi'],

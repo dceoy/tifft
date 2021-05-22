@@ -3,6 +3,7 @@
 import logging
 import os
 from pathlib import Path
+from pprint import pformat
 
 import pandas as pd
 import pandas_datareader.data as pdd
@@ -12,26 +13,38 @@ from .macd import MacdCalculator
 from .rsi import RsiCalculator
 
 
-def fetch_fred_data(symbols, output_csv_path=None, start_date=None,
-                    end_date=None, max_rows=None, **kwargs):
+def fetch_remote_data(name, data_source='fred', api_key=None,
+                      output_csv_path=None, start_date=None, end_date=None,
+                      max_rows=None, **kwargs):
     logger = logging.getLogger(__name__)
-    print('>>\tGet historical data from FRED:\t' + ', '.join(symbols))
-    df_hist = _fetch_fred_df(
-        symbols=symbols, start_date=start_date, end_date=end_date, **kwargs
+    df_hist = _load_data_with_pandas_datareader(
+        name=(
+            name if isinstance(name, str) or data_source in {'fred', 'iex'}
+            else name[0]
+        ),
+        data_source=data_source, start=start_date, end=end_date,
+        api_key=api_key, **kwargs
     )
     logger.debug(f'df_hist:{os.linesep}{df_hist}')
-    print('>>\tPrint results:\t' + ', '.join(symbols))
+    print(
+        '>>\tPrint results:\t'
+        + (name if isinstance(name, str) else ', '.join(name))
+    )
     pd.set_option('display.max_rows', (int(max_rows) if max_rows else None))
     print(df_hist)
     if output_csv_path:
         _write_df_to_csv(df=df_hist, csv_path=output_csv_path)
 
 
-def _fetch_fred_df(symbols, start_date=None, end_date=None, **kwargs):
-    return pdd.DataReader(
-        name=symbols, data_source='fred', start=start_date, end=end_date,
-        **kwargs
+def _load_data_with_pandas_datareader(**kwargs):
+    logger = logging.getLogger(__name__)
+    logger.info('Argments for DataReader:\t' + os.linesep + pformat(kwargs))
+    name = kwargs['name']
+    print(
+        '>>\tGet data from {}:\t'.format(kwargs['data_source'])
+        + (name if isinstance(name, str) else ', '.join(name))
     )
+    return pdd.DataReader(**kwargs)
 
 
 def _write_df_to_csv(df, csv_path):
@@ -40,28 +53,29 @@ def _write_df_to_csv(df, csv_path):
     df.to_csv(output_csv, mode='w', header=True, sep=',')
 
 
-def calculate_indicator_for_fred_data(indicator, symbol, output_csv_path=None,
-                                      start_date=None, end_date=None,
-                                      max_rows=None, **kwargs):
+def calculate_indicator_for_remote_data(indicator, name, data_source='fred',
+                                        api_key=None, output_csv_path=None,
+                                        start_date=None, end_date=None,
+                                        max_rows=None, **kwargs):
     logger = logging.getLogger(__name__)
-    print(f'>>\tGet historical data from FRED:\t{symbol}')
-    df_hist = _fetch_fred_df(
-        symbols=symbol, start_date=start_date, end_date=end_date
+    df_hist = _load_data_with_pandas_datareader(
+        name=name, data_source=data_source, start=start_date, end=end_date,
+        api_key=api_key
     )
     logger.debug(f'df_hist:{os.linesep}{df_hist}')
     if indicator == 'macd':
-        print(f'>>\tCalculate MACD:\t{symbol}')
+        print(f'>>\tCalculate MACD:\t{name}')
         params = {
             k: int(kwargs[k])
             for k in ['fast_ema_span', 'slow_ema_span', 'macd_ema_span']
         }
         calculator = MacdCalculator
     elif indicator == 'bb':
-        print(f'>>\tCalculate Bollinger Bands:\t{symbol}')
+        print(f'>>\tCalculate Bollinger Bands:\t{name}')
         params = {k: int(kwargs[k]) for k in ['window_size', 'sd_multiplier']}
         calculator = BollingerBandsCalculator
     elif indicator == 'rsi':
-        print(f'>>\tCalculate RSI:\t{symbol}')
+        print(f'>>\tCalculate RSI:\t{name}')
         params = {
             k: int(kwargs[k])
             for k in ['window_size', 'upper_line', 'lower_line']
@@ -74,7 +88,7 @@ def calculate_indicator_for_fred_data(indicator, symbol, output_csv_path=None,
         values=df_hist.iloc[:, 0]
     ).pipe(lambda d: d.rename(columns={k: k.upper() for k in d.columns}))
     logger.debug(f'df_indicator:{os.linesep}{df_indicator}')
-    print(f'>>\tPrint results:\t{symbol}')
+    print(f'>>\tPrint results:\t{name}')
     pd.set_option('display.max_rows', (int(max_rows) if max_rows else None))
     print(df_indicator)
     if output_csv_path:
