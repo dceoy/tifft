@@ -5,6 +5,7 @@ Technical Indicators for Financial Trading
 
 [![Test](https://github.com/dceoy/tifft/actions/workflows/test.yml/badge.svg)](https://github.com/dceoy/tifft/actions/workflows/test.yml)
 [![Upload Python Package](https://github.com/dceoy/tifft/actions/workflows/python-publish.yml/badge.svg)](https://github.com/dceoy/tifft/actions/workflows/python-publish.yml)
+[![CI to Docker Hub](https://github.com/dceoy/tifft/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/dceoy/tifft/actions/workflows/docker-publish.yml)
 
 Installation
 ------------
@@ -19,7 +20,7 @@ Docker image
 The image is available at [Docker Hub](https://hub.docker.com/r/dceoy/tifft/).
 
 ```sh
-$ docker pull dceoy/tifft
+$ docker image pull dceoy/tifft
 ```
 
 Usage
