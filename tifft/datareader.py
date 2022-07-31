@@ -13,9 +13,9 @@ from .macd import MacdCalculator
 from .rsi import RsiCalculator
 
 
-def fetch_remote_data(name, data_source='fred', api_key=None,
-                      output_csv_path=None, start_date=None, end_date=None,
-                      max_rows=None, **kwargs):
+def fetch_remote_data(name, data_source='fred', api_key=None, start_date=None,
+                      end_date=None, max_rows=None, drop_na=False,
+                      output_csv_path=None, **kwargs):
     logger = logging.getLogger(__name__)
     df_hist = _load_data_with_pandas_datareader(
         name=(
@@ -24,7 +24,7 @@ def fetch_remote_data(name, data_source='fred', api_key=None,
         ),
         data_source=data_source, start=start_date, end=end_date,
         api_key=api_key, **kwargs
-    )
+    ).pipe(lambda d: (d.dropna() if drop_na else d))
     logger.debug(f'df_hist:{os.linesep}{df_hist}')
     print(
         '>>\tPrint results:\t'
@@ -54,14 +54,15 @@ def _write_df_to_csv(df, csv_path):
 
 
 def calculate_indicator_for_remote_data(indicator, name, data_source='fred',
-                                        api_key=None, output_csv_path=None,
-                                        start_date=None, end_date=None,
-                                        max_rows=None, **kwargs):
+                                        api_key=None, start_date=None,
+                                        end_date=None, max_rows=None,
+                                        drop_na=False, output_csv_path=None,
+                                        **kwargs):
     logger = logging.getLogger(__name__)
     df_hist = _load_data_with_pandas_datareader(
         name=name, data_source=data_source, start=start_date, end=end_date,
         api_key=api_key
-    )
+    ).pipe(lambda d: (d.dropna() if drop_na else d))
     logger.debug(f'df_hist:{os.linesep}{df_hist}')
     if indicator == 'macd':
         print(f'>>\tCalculate MACD:\t{name}')

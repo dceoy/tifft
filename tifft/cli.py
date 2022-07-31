@@ -6,18 +6,20 @@ Usage:
     tifft -h|--help
     tifft --version
     tifft history [--debug|--info] [--data-source=<name>] [--api-key=<token>]
-        [--start=<date>] [--end=<date>] [--max-rows=<int>]
+        [--start=<date>] [--end=<date>] [--max-rows=<int>] [--drop-na]
         [--output-csv=<path>] <name>...
     tifft macd [--debug|--info] [--data-source=<name>] [--api-key=<token>]
-        [--start=<date>] [--end=<date>] [--max-rows=<int>]
+        [--start=<date>] [--end=<date>] [--max-rows=<int>] [--drop-na]
         [--fast-ema-span=<int>] [--slow-ema-span=<int>] [--macd-ema-span=<int>]
         [--output-csv=<path>] <name>
     tifft bb [--debug|--info] [--data-source=<name>] [--api-key=<token>]
-        [--start=<date>] [--end=<date>] [--max-rows=<int>] [--bb-window=<int>]
-        [--sd-multiplier=<int>] [--output-csv=<path>] <name>
+        [--start=<date>] [--end=<date>] [--max-rows=<int>] [--drop-na]
+        [--bb-window=<int>] [--sd-multiplier=<int>] [--output-csv=<path>]
+        <name>
     tifft rsi [--debug|--info] [--data-source=<name>] [--api-key=<token>]
-        [--start=<date>] [--end=<date>] [--max-rows=<int>] [--rsi-window=<int>]
-        [--upper-rsi=<int>] [--lower-rsi=<int>] [--output-csv=<path>] <name>
+        [--start=<date>] [--end=<date>] [--max-rows=<int>] [--drop-na]
+        [--rsi-window=<int>] [--upper-rsi=<int>] [--lower-rsi=<int>]
+        [--output-csv=<path>] <name>
 
 Options:
     -h, --help              Print help and exit
@@ -25,9 +27,10 @@ Options:
     --debug, --info         Execute a command with debug|info messages
     --data-source=<name>    Specify the data source [default: fred]
     --api-key=<token>       Specify an API key for a data source
-    --max-rows=<int>        Specify the max rows to display [default: 60]
     --start=<date>          Specify the start date (e.g., 2021-01-01)
     --end=<date>            Specify the end date
+    --max-rows=<int>        Specify the max rows to display [default: 60]
+    --drop-na               Delete rows with missing values from the input data
     --output-csv=<path>     Write data with CSV into a file
     --fast-ema-span=<int>   Specify the fast EMA span [default: 12]
     --slow-ema-span=<int>   Specify the slow EMA span [default: 26]
@@ -66,37 +69,37 @@ def main():
     if args['history']:
         fetch_remote_data(
             name=args['<name>'], data_source=args['--data-source'],
-            api_key=args['--api-key'], output_csv_path=args['--output-csv'],
-            start_date=args['--start'], end_date=args['--end'],
-            max_rows=args['--max-rows']
+            api_key=args['--api-key'], start_date=args['--start'],
+            end_date=args['--end'], max_rows=args['--max-rows'],
+            drop_na=args['--drop-na'], output_csv_path=args['--output-csv']
         )
     elif args['macd']:
         calculate_indicator_for_remote_data(
             name=args['<name>'][0], data_source=args['--data-source'],
-            api_key=args['--api-key'], output_csv_path=args['--output-csv'],
-            start_date=args['--start'], end_date=args['--end'],
-            max_rows=args['--max-rows'], indicator='macd',
-            fast_ema_span=args['--fast-ema-span'],
+            api_key=args['--api-key'], start_date=args['--start'],
+            end_date=args['--end'], max_rows=args['--max-rows'],
+            drop_na=args['--drop-na'], output_csv_path=args['--output-csv'],
+            indicator='macd', fast_ema_span=args['--fast-ema-span'],
             slow_ema_span=args['--slow-ema-span'],
             macd_ema_span=args['--macd-ema-span']
         )
     elif args['bb']:
         calculate_indicator_for_remote_data(
             name=args['<name>'][0], data_source=args['--data-source'],
-            api_key=args['--api-key'], output_csv_path=args['--output-csv'],
-            start_date=args['--start'], end_date=args['--end'],
-            max_rows=args['--max-rows'], indicator='bb',
-            window_size=args['--bb-window'],
+            api_key=args['--api-key'], start_date=args['--start'],
+            end_date=args['--end'], max_rows=args['--max-rows'],
+            drop_na=args['--drop-na'], output_csv_path=args['--output-csv'],
+            indicator='bb', window_size=args['--bb-window'],
             sd_multiplier=args['--sd-multiplier']
         )
     elif args['rsi']:
         calculate_indicator_for_remote_data(
             name=args['<name>'][0], data_source=args['--data-source'],
-            api_key=args['--api-key'], output_csv_path=args['--output-csv'],
-            start_date=args['--start'], end_date=args['--end'],
-            max_rows=args['--max-rows'], indicator='rsi',
-            window_size=args['--rsi-window'], upper_line=args['--upper-rsi'],
-            lower_line=args['--lower-rsi']
+            api_key=args['--api-key'], start_date=args['--start'],
+            end_date=args['--end'], max_rows=args['--max-rows'],
+            drop_na=args['--drop-na'], output_csv_path=args['--output-csv'],
+            indicator='rsi', window_size=args['--rsi-window'],
+            upper_line=args['--upper-rsi'], lower_line=args['--lower-rsi']
         )
 
 
