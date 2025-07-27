@@ -1,6 +1,9 @@
 #!/usr/bin/env python
-"""
-Technical Indicators for Financial Trading
+"""Command-line interface for Technical Indicators for Financial Trading.
+
+This module provides the command-line interface for the tifft package,
+enabling users to fetch historical financial data and calculate technical
+indicators such as MACD, Bollinger Bands, and RSI.
 
 Usage:
     tifft -h|--help
@@ -63,6 +66,11 @@ from .datareader import calculate_indicator_for_remote_data, fetch_remote_data
 
 
 def main() -> None:
+    """Execute the main command-line interface.
+
+    Parses command-line arguments and executes the appropriate command
+    for fetching historical data or calculating technical indicators.
+    """
     args = docopt(__doc__, version=__version__)
     _set_log_config(debug=args["--debug"], info=args["--info"])
     logger = logging.getLogger(__name__)
@@ -125,6 +133,13 @@ def main() -> None:
 
 
 def _set_log_config(debug: Optional[bool] = None, info: Optional[bool] = None) -> None:
+    """Configure logging based on command-line arguments.
+
+    Args:
+        debug: If True, set logging level to DEBUG.
+        info: If True, set logging level to INFO.
+            If neither debug nor info is True, set to WARNING.
+    """
     if debug:
         lv = logging.DEBUG
     elif info:

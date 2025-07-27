@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+"""MACD (Moving Average Convergence Divergence) technical indicator calculator.
+
+This module provides a calculator class for computing MACD, a momentum
+indicator that shows the relationship between two moving averages of a
+security's price.
+"""
 
 import logging
 import os
@@ -9,6 +15,19 @@ import pandas as pd
 
 
 class MacdCalculator(object):
+    """Calculator for MACD (Moving Average Convergence Divergence) indicator.
+
+    MACD is calculated by subtracting the slow exponential moving average (EMA)
+    from the fast EMA. A signal line (EMA of MACD) is then calculated to
+    generate trading signals.
+
+    Attributes:
+        fast_ema_span (int): Span for the fast exponential moving average.
+        slow_ema_span (int): Span for the slow exponential moving average.
+        macd_ema_span (int): Span for the MACD signal line EMA.
+        ewm_kwargs (dict): Parameters for exponential weighted moving average.
+    """
+
     def __init__(
         self,
         fast_ema_span: int = 12,
@@ -16,6 +35,17 @@ class MacdCalculator(object):
         macd_ema_span: int = 9,
         **kwargs: Any,
     ) -> None:
+        """Initialize the MACD calculator.
+
+        Args:
+            fast_ema_span: Period for fast EMA calculation. Defaults to 12.
+            slow_ema_span: Period for slow EMA calculation. Defaults to 26.
+            macd_ema_span: Period for MACD signal line EMA. Defaults to 9.
+            **kwargs: Additional arguments passed to the EWM function.
+
+        Raises:
+            AssertionError: If fast_ema_span >= slow_ema_span.
+        """
         assert fast_ema_span < slow_ema_span, "invalid spans"
         self.__logger = logging.getLogger(__name__)
         self.fast_ema_span = fast_ema_span
@@ -25,6 +55,19 @@ class MacdCalculator(object):
         self.__logger.debug(f"vars(self):{os.linesep}" + pformat(vars(self)))
 
     def calculate(self, values: Union[pd.Series, list]) -> pd.DataFrame:
+        """Calculate MACD indicator for the given values.
+
+        Args:
+            values: Price data as pandas Series or list.
+
+        Returns:
+            DataFrame with columns:
+                - value: Original values
+                - macd: MACD line (fast EMA - slow EMA)
+                - macd_ema: Signal line (EMA of MACD)
+                - signal: Trading signal based on MACD and signal line crossover
+                    (2: strong bullish, 1: bullish, -1: bearish, -2: strong bearish)
+        """
         return (
             (
                 values.to_frame(name="value")
