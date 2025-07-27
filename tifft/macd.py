@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """MACD (Moving Average Convergence Divergence) technical indicator calculator.
 
 This module provides a calculator class for computing MACD, a momentum
@@ -9,12 +8,12 @@ security's price.
 import logging
 import os
 from pprint import pformat
-from typing import Any, Union
+from typing import Any
 
 import pandas as pd
 
 
-class MacdCalculator(object):
+class MacdCalculator:
     """Calculator for MACD (Moving Average Convergence Divergence) indicator.
 
     MACD is calculated by subtracting the slow exponential moving average (EMA)
@@ -33,7 +32,7 @@ class MacdCalculator(object):
         fast_ema_span: int = 12,
         slow_ema_span: int = 26,
         macd_ema_span: int = 9,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Initialize the MACD calculator.
 
@@ -44,17 +43,19 @@ class MacdCalculator(object):
             **kwargs: Additional arguments passed to the EWM function.
 
         Raises:
-            AssertionError: If fast_ema_span >= slow_ema_span.
+            ValueError: If fast_ema_span >= slow_ema_span.
         """
-        assert fast_ema_span < slow_ema_span, "invalid spans"
+        if fast_ema_span >= slow_ema_span:
+            msg = "fast_ema_span must be less than slow_ema_span"
+            raise ValueError(msg)
         self.__logger = logging.getLogger(__name__)
         self.fast_ema_span = fast_ema_span
         self.slow_ema_span = slow_ema_span
         self.macd_ema_span = macd_ema_span
         self.ewm_kwargs = {"adjust": False, **kwargs}
-        self.__logger.debug(f"vars(self):{os.linesep}" + pformat(vars(self)))
+        self.__logger.debug("vars(self):%s%s", os.linesep, pformat(vars(self)))
 
-    def calculate(self, values: Union[pd.Series, list]) -> pd.DataFrame:
+    def calculate(self, values: pd.Series | list) -> pd.DataFrame:
         """Calculate MACD indicator for the given values.
 
         Args:

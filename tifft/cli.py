@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Command-line interface for Technical Indicators for Financial Trading.
 
 This module provides the command-line interface for the tifft package,
@@ -57,7 +56,6 @@ Arguments:
 
 import logging
 import os
-from typing import Optional
 
 from docopt import docopt
 
@@ -74,7 +72,7 @@ def main() -> None:
     args = docopt(__doc__, version=__version__)
     _set_log_config(debug=args["--debug"], info=args["--info"])
     logger = logging.getLogger(__name__)
-    logger.debug(f"args:{os.linesep}{args}")
+    logger.debug("args:%s%s", os.linesep, args)
     if args["history"]:
         fetch_remote_data(
             name=args["<name>"],
@@ -132,7 +130,7 @@ def main() -> None:
         )
 
 
-def _set_log_config(debug: Optional[bool] = None, info: Optional[bool] = None) -> None:
+def _set_log_config(*, debug: bool | None = None, info: bool | None = None) -> None:
     """Configure logging based on command-line arguments.
 
     Args:

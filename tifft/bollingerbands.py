@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Bollinger Bands technical indicator calculator.
 
 This module provides a calculator class for computing Bollinger Bands,
@@ -9,13 +8,13 @@ lower bands based on standard deviation.
 import logging
 import os
 from pprint import pformat
-from typing import Any, Union
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
 
-class BollingerBandsCalculator(object):
+class BollingerBandsCalculator:
     """Calculator for Bollinger Bands technical indicator.
 
     Bollinger Bands consist of a middle line (moving average) and two outer bands
@@ -28,7 +27,10 @@ class BollingerBandsCalculator(object):
     """
 
     def __init__(
-        self, window_size: int = 20, sd_multiplier: int = 2, **kwargs: Any
+        self,
+        window_size: int = 20,
+        sd_multiplier: int = 2,
+        **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Initialize the Bollinger Bands calculator.
 
@@ -40,9 +42,9 @@ class BollingerBandsCalculator(object):
         self.__logger = logging.getLogger(__name__)
         self.sd_multiplier = sd_multiplier
         self.rolling_kwargs = {"window": window_size, **kwargs}
-        self.__logger.debug(f"vars(self):{os.linesep}" + pformat(vars(self)))
+        self.__logger.debug("vars(self):%s%s", os.linesep, pformat(vars(self)))
 
-    def calculate(self, values: Union[pd.Series, list]) -> pd.DataFrame:
+    def calculate(self, values: pd.Series | list) -> pd.DataFrame:
         """Calculate Bollinger Bands for the given values.
 
         Args:

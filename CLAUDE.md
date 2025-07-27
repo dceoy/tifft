@@ -13,43 +13,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Development
 ```bash
-# Install uv (if not already installed)
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Create virtual environment and install dependencies
-uv venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
 # Install the package in development mode with all dependencies
-uv pip install -e .
+uv sync
 
-# Install development dependencies
-uv pip install -e ".[dev]"
-
-# Run linting (as per test workflow)
-flake8 .
+# Run linting and type checking
+uv run ruff check --fix .
+uv run pyright
 
 # Test command-line interface
-tifft --version
-tifft --help
+uv run tifft --version
+uv run tifft --help
 ```
 
 ### Testing
 ```bash
 # Run basic commands to test functionality
-tifft history DJIA SP500 NASDAQ100
-tifft macd SP500
-tifft bb SP500
-tifft rsi SP500
-```
-
-### Building and Publishing
-```bash
-# Build package with uv
-uv build
-
-# Docker build
-docker build -t tifft .
+uv run tifft history DJIA SP500 NASDAQ100
+uv run tifft macd SP500
+uv run tifft bb SP500
+uv run tifft rsi SP500
 ```
 
 ## Architecture

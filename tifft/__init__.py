@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Technical Indicators for Financial Trading (tifft).
 
 This package provides tools for calculating technical indicators for financial trading.

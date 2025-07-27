@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """RSI (Relative Strength Index) technical indicator calculator.
 
 This module provides a calculator class for computing RSI, a momentum
@@ -10,13 +9,13 @@ and oversold conditions.
 import logging
 import os
 from pprint import pformat
-from typing import Any, Union
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
 
-class RsiCalculator(object):
+class RsiCalculator:
     """Calculator for RSI (Relative Strength Index) indicator.
 
     RSI is calculated based on the ratio of upward price changes to downward
@@ -35,7 +34,7 @@ class RsiCalculator(object):
         window_size: int = 14,
         upper_line: int = 70,
         lower_line: int = 30,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Initialize the RSI calculator.
 
@@ -49,9 +48,9 @@ class RsiCalculator(object):
         self.upper_line = upper_line
         self.lower_line = lower_line
         self.rolling_kwargs = {"window": window_size, **kwargs}
-        self.__logger.debug(f"vars(self):{os.linesep}" + pformat(vars(self)))
+        self.__logger.debug("vars(self):%s%s", os.linesep, pformat(vars(self)))
 
-    def calculate(self, values: Union[pd.Series, list]) -> pd.DataFrame:
+    def calculate(self, values: pd.Series | list) -> pd.DataFrame:
         """Calculate RSI indicator for the given values.
 
         Args:

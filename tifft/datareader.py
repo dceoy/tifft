@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Data reader module for fetching financial data and calculating indicators.
 
 This module provides functionality to fetch remote financial data using
@@ -10,7 +9,7 @@ import logging
 import os
 from pathlib import Path
 from pprint import pformat
-from typing import Any, List, Optional, Union
+from typing import Any
 
 import pandas as pd
 import pandas_datareader.data as pdd
@@ -20,16 +19,17 @@ from .macd import MacdCalculator
 from .rsi import RsiCalculator
 
 
-def fetch_remote_data(
-    name: Union[str, List[str]],
+def fetch_remote_data(  # noqa: PLR0913, PLR0917
+    name: str | list[str],
     data_source: str = "fred",
-    api_key: Optional[str] = None,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-    max_rows: Optional[Union[str, int]] = None,
+    api_key: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    max_rows: str | int | None = None,
+    *,
     drop_na: bool = False,
-    output_csv_path: Optional[str] = None,
-    **kwargs: Any,
+    output_csv_path: str | None = None,
+    **kwargs: Any,  # noqa: ANN401
 ) -> None:
     """Fetch historical financial data from a remote data source.
 
@@ -55,15 +55,15 @@ def fetch_remote_data(
         api_key=api_key,
         **kwargs,
     ).pipe(lambda d: (d.dropna() if drop_na else d))
-    logger.debug(f"df_hist:{os.linesep}{df_hist}")
-    print(">>\tPrint results:\t" + (name if isinstance(name, str) else ", ".join(name)))
+    logger.debug("df_hist:%s%s", os.linesep, df_hist)
+    print(">>\tPrint results:\t" + (name if isinstance(name, str) else ", ".join(name)))  # noqa: T201
     pd.set_option("display.max_rows", (int(max_rows) if max_rows else None))
-    print(df_hist)
+    print(df_hist)  # noqa: T201
     if output_csv_path:
         _write_df_to_csv(df=df_hist, csv_path=output_csv_path)
 
 
-def _load_data_with_pandas_datareader(**kwargs: Any) -> pd.DataFrame:
+def _load_data_with_pandas_datareader(**kwargs: Any) -> pd.DataFrame:  # noqa: ANN401
     """Load data using pandas_datareader.DataReader.
 
     Args:
@@ -73,9 +73,9 @@ def _load_data_with_pandas_datareader(**kwargs: Any) -> pd.DataFrame:
         DataFrame containing the fetched data.
     """
     logger = logging.getLogger(__name__)
-    logger.info("Argments for DataReader:\t" + os.linesep + pformat(kwargs))
+    logger.info("Arguments for DataReader:%s%s", os.linesep, pformat(kwargs))
     name = kwargs["name"]
-    print(
+    print(  # noqa: T201
         ">>\tGet data from {}:\t".format(kwargs["data_source"])
         + (name if isinstance(name, str) else ", ".join(name))
     )
@@ -90,21 +90,21 @@ def _write_df_to_csv(df: pd.DataFrame, csv_path: str) -> None:
         csv_path: Path where the CSV file will be saved.
     """
     output_csv = Path(csv_path).resolve()
-    print(f">>\tWrite a CSV file:\t{output_csv}")
+    print(f">>\tWrite a CSV file:\t{output_csv}")  # noqa: T201
     df.to_csv(output_csv, mode="w", header=True, sep=",")
 
 
-def calculate_indicator_for_remote_data(
+def calculate_indicator_for_remote_data(  # noqa: PLR0913, PLR0917
     indicator: str,
     name: str,
     data_source: str = "fred",
-    api_key: Optional[str] = None,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-    max_rows: Optional[Union[str, int]] = None,
-    drop_na: bool = False,
-    output_csv_path: Optional[str] = None,
-    **kwargs: Any,
+    api_key: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    max_rows: str | int | None = None,
+    drop_na: bool = False,  # noqa: FBT001, FBT002
+    output_csv_path: str | None = None,
+    **kwargs: Any,  # noqa: ANN401
 ) -> None:
     """Calculate technical indicators for remotely fetched financial data.
 
@@ -134,45 +134,46 @@ def calculate_indicator_for_remote_data(
         end=end_date,
         api_key=api_key,
     ).pipe(lambda d: (d.dropna() if drop_na else d))
-    logger.debug(f"df_hist:{os.linesep}{df_hist}")
+    logger.debug("df_hist:%s%s", os.linesep, df_hist)
     if indicator == "macd":
-        print(f">>\tCalculate MACD:\t{name}")
+        print(f">>\tCalculate MACD:\t{name}")  # noqa: T201
         params = {
             k: int(kwargs[k])
             for k in ["fast_ema_span", "slow_ema_span", "macd_ema_span"]
         }
         calculator = MacdCalculator
     elif indicator == "bb":
-        print(f">>\tCalculate Bollinger Bands:\t{name}")
+        print(f">>\tCalculate Bollinger Bands:\t{name}")  # noqa: T201
         params = {k: int(kwargs[k]) for k in ["window_size", "sd_multiplier"]}
         calculator = BollingerBandsCalculator
     elif indicator == "rsi":
-        print(f">>\tCalculate RSI:\t{name}")
+        print(f">>\tCalculate RSI:\t{name}")  # noqa: T201
         params = {
             k: int(kwargs[k]) for k in ["window_size", "upper_line", "lower_line"]
         }
         calculator = RsiCalculator
     else:
-        raise ValueError(f"invalid indicator: {indicator}")
+        msg = f"invalid indicator: {indicator}"
+        raise ValueError(msg)
     _print_key_values(**params)
     df_indicator = (
         calculator(**params)
         .calculate(values=df_hist.iloc[:, 0])
         .pipe(lambda d: d.rename(columns={k: k.upper() for k in d.columns}))
     )
-    logger.debug(f"df_indicator:{os.linesep}{df_indicator}")
-    print(f">>\tPrint results:\t{name}")
+    logger.debug("df_indicator:%s%s", os.linesep, df_indicator)
+    print(f">>\tPrint results:\t{name}")  # noqa: T201
     pd.set_option("display.max_rows", (int(max_rows) if max_rows else None))
-    print(df_indicator)
+    print(df_indicator)  # noqa: T201
     if output_csv_path:
         _write_df_to_csv(df=df_indicator, csv_path=output_csv_path)
 
 
-def _print_key_values(**kwargs: Any) -> None:
+def _print_key_values(**kwargs: Any) -> None:  # noqa: ANN401
     """Print key-value pairs in a formatted manner.
 
     Args:
         **kwargs: Key-value pairs to print.
     """
     for k, v in kwargs.items():
-        print("{0}:\t{1}".format(k.upper().replace("_", " "), v))
+        print(f"{k.upper().replace('_', ' ')}:\t{v}")  # noqa: T201
