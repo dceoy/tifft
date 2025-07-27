@@ -54,6 +54,7 @@ Arguments:
 
 import logging
 import os
+from typing import Optional
 
 from docopt import docopt
 
@@ -61,49 +62,69 @@ from . import __version__
 from .datareader import calculate_indicator_for_remote_data, fetch_remote_data
 
 
-def main():
+def main() -> None:
     args = docopt(__doc__, version=__version__)
-    _set_log_config(debug=args['--debug'], info=args['--info'])
+    _set_log_config(debug=args["--debug"], info=args["--info"])
     logger = logging.getLogger(__name__)
-    logger.debug(f'args:{os.linesep}{args}')
-    if args['history']:
+    logger.debug(f"args:{os.linesep}{args}")
+    if args["history"]:
         fetch_remote_data(
-            name=args['<name>'], data_source=args['--data-source'],
-            api_key=args['--api-key'], start_date=args['--start'],
-            end_date=args['--end'], max_rows=args['--max-rows'],
-            drop_na=args['--drop-na'], output_csv_path=args['--output-csv']
+            name=args["<name>"],
+            data_source=args["--data-source"],
+            api_key=args["--api-key"],
+            start_date=args["--start"],
+            end_date=args["--end"],
+            max_rows=args["--max-rows"],
+            drop_na=args["--drop-na"],
+            output_csv_path=args["--output-csv"],
         )
-    elif args['macd']:
+    elif args["macd"]:
         calculate_indicator_for_remote_data(
-            name=args['<name>'][0], data_source=args['--data-source'],
-            api_key=args['--api-key'], start_date=args['--start'],
-            end_date=args['--end'], max_rows=args['--max-rows'],
-            drop_na=args['--drop-na'], output_csv_path=args['--output-csv'],
-            indicator='macd', fast_ema_span=args['--fast-ema-span'],
-            slow_ema_span=args['--slow-ema-span'],
-            macd_ema_span=args['--macd-ema-span']
+            name=args["<name>"][0],
+            data_source=args["--data-source"],
+            api_key=args["--api-key"],
+            start_date=args["--start"],
+            end_date=args["--end"],
+            max_rows=args["--max-rows"],
+            drop_na=args["--drop-na"],
+            output_csv_path=args["--output-csv"],
+            indicator="macd",
+            fast_ema_span=args["--fast-ema-span"],
+            slow_ema_span=args["--slow-ema-span"],
+            macd_ema_span=args["--macd-ema-span"],
         )
-    elif args['bb']:
+    elif args["bb"]:
         calculate_indicator_for_remote_data(
-            name=args['<name>'][0], data_source=args['--data-source'],
-            api_key=args['--api-key'], start_date=args['--start'],
-            end_date=args['--end'], max_rows=args['--max-rows'],
-            drop_na=args['--drop-na'], output_csv_path=args['--output-csv'],
-            indicator='bb', window_size=args['--bb-window'],
-            sd_multiplier=args['--sd-multiplier']
+            name=args["<name>"][0],
+            data_source=args["--data-source"],
+            api_key=args["--api-key"],
+            start_date=args["--start"],
+            end_date=args["--end"],
+            max_rows=args["--max-rows"],
+            drop_na=args["--drop-na"],
+            output_csv_path=args["--output-csv"],
+            indicator="bb",
+            window_size=args["--bb-window"],
+            sd_multiplier=args["--sd-multiplier"],
         )
-    elif args['rsi']:
+    elif args["rsi"]:
         calculate_indicator_for_remote_data(
-            name=args['<name>'][0], data_source=args['--data-source'],
-            api_key=args['--api-key'], start_date=args['--start'],
-            end_date=args['--end'], max_rows=args['--max-rows'],
-            drop_na=args['--drop-na'], output_csv_path=args['--output-csv'],
-            indicator='rsi', window_size=args['--rsi-window'],
-            upper_line=args['--upper-rsi'], lower_line=args['--lower-rsi']
+            name=args["<name>"][0],
+            data_source=args["--data-source"],
+            api_key=args["--api-key"],
+            start_date=args["--start"],
+            end_date=args["--end"],
+            max_rows=args["--max-rows"],
+            drop_na=args["--drop-na"],
+            output_csv_path=args["--output-csv"],
+            indicator="rsi",
+            window_size=args["--rsi-window"],
+            upper_line=args["--upper-rsi"],
+            lower_line=args["--lower-rsi"],
         )
 
 
-def _set_log_config(debug=None, info=None):
+def _set_log_config(debug: Optional[bool] = None, info: Optional[bool] = None) -> None:
     if debug:
         lv = logging.DEBUG
     elif info:
@@ -111,6 +132,7 @@ def _set_log_config(debug=None, info=None):
     else:
         lv = logging.WARNING
     logging.basicConfig(
-        format='%(asctime)s %(levelname)-8s %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S', level=lv
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        level=lv,
     )
