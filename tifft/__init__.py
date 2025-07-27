@@ -12,4 +12,6 @@ Modules:
     rsi: RSI (Relative Strength Index) calculator
 """
 
-__version__ = "v0.1.2"
+from importlib.metadata import version
+
+__version__ = version(__package__) if __package__ else None
