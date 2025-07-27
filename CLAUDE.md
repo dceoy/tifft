@@ -13,8 +13,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Development
 ```bash
-# Install the package in development mode
-pip install -e .
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create virtual environment and install dependencies
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install the package in development mode with all dependencies
+uv pip install -e .
+
+# Install development dependencies
+uv pip install -e ".[dev]"
 
 # Run linting (as per test workflow)
 flake8 .
@@ -35,8 +45,8 @@ tifft rsi SP500
 
 ### Building and Publishing
 ```bash
-# Build package (standard Python packaging)
-python setup.py sdist bdist_wheel
+# Build package with uv
+uv build
 
 # Docker build
 docker build -t tifft .

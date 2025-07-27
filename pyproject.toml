@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tifft"
+version = "0.1.3"
+description = "Technical Indicators for Financial Trading"
+readme = "README.md"
+requires-python = ">=3.6"
+license = {text = "GPL-3.0"}
+authors = [
+    {name = "Daichi Narushima", email = "dnarsil+github@gmail.com"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = [
+    "docopt",
+    "pandas",
+    "pandas-datareader",
+]
+
+[project.urls]
+Homepage = "https://github.com/dceoy/tifft"
+Repository = "https://github.com/dceoy/tifft"
+
+[project.scripts]
+tifft = "tifft.cli:main"
+
+[tool.uv]
+dev-dependencies = [
+    "flake8",
+]

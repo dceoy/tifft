@@ -10,8 +10,23 @@ Technical Indicators for Financial Trading
 Installation
 ------------
 
+Using pip:
 ```sh
 $ pip install -U tifft
+```
+
+Using uv:
+```sh
+$ uv pip install tifft
+```
+
+For development with uv:
+```sh
+$ git clone https://github.com/dceoy/tifft.git
+$ cd tifft
+$ uv venv
+$ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+$ uv pip install -e .
 ```
 
 Docker image
