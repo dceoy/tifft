@@ -75,7 +75,7 @@ class MacdCalculator:
                 if isinstance(values, pd.Series)
                 else pd.DataFrame({"value": values})
             )
-            .assign(value_ff=lambda d: d["value"].ffill())
+            .assign(value_ff=lambda d: d["value"].fillna(method='ffill'))
             .assign(
                 macd=lambda d: (
                     d["value_ff"].ewm(span=self.fast_ema_span, **self.ewm_kwargs).mean()
