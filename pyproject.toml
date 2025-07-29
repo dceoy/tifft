@@ -47,7 +47,7 @@ dev-dependencies = [
 ]
 
 [tool.uv.build-backend]
-source-include = ["pdmt5/**", "LICENSE"]
+source-include = ["tifft/**", "LICENSE"]
 source-exclude = ["test/**"]
 
 [tool.ruff]
