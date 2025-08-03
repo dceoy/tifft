@@ -12,7 +12,7 @@ from pprint import pformat
 from typing import Any
 
 import pandas as pd
-import pandas_datareader.data as pdd
+import pandas_datareader.data as pdd  # type: ignore[reportMissingTypeStubs]
 
 from .bollingerbands import BollingerBandsCalculator
 from .macd import MacdCalculator

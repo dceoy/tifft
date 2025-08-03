@@ -8,8 +8,9 @@ and oversold conditions.
 
 import logging
 import os
+from collections.abc import Sequence
 from pprint import pformat
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
@@ -50,7 +51,7 @@ class RsiCalculator:
         self.rolling_kwargs = {"window": window_size, **kwargs}
         self.__logger.debug("vars(self):%s%s", os.linesep, pformat(vars(self)))
 
-    def calculate(self, values: pd.Series | list) -> pd.DataFrame:
+    def calculate(self, values: pd.Series | Sequence[int | float]) -> pd.DataFrame:
         """Calculate RSI indicator for the given values.
 
         Args:
@@ -76,8 +77,8 @@ class RsiCalculator:
             )
             .assign(
                 rs=lambda d: (
-                    d["upward"].rolling(**self.rolling_kwargs).mean()
-                    / d["downward"].rolling(**self.rolling_kwargs).mean()
+                    d["upward"].rolling(**cast("Any", self.rolling_kwargs)).mean()
+                    / d["downward"].rolling(**cast("Any", self.rolling_kwargs)).mean()
                 )
             )
             .assign(rsi=lambda d: (100 - 100 / (1 + d["rs"])))

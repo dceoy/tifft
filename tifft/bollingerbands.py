@@ -7,11 +7,15 @@ lower bands based on standard deviation.
 
 import logging
 import os
+from collections.abc import Sequence
 from pprint import pformat
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
+
+# Tolerance for floating point comparison
+FLOAT_TOLERANCE = 1e-10
 
 
 class BollingerBandsCalculator:
@@ -44,7 +48,7 @@ class BollingerBandsCalculator:
         self.rolling_kwargs = {"window": window_size, **kwargs}
         self.__logger.debug("vars(self):%s%s", os.linesep, pformat(vars(self)))
 
-    def calculate(self, values: pd.Series | list) -> pd.DataFrame:
+    def calculate(self, values: pd.Series | Sequence[int | float]) -> pd.DataFrame:
         """Calculate Bollinger Bands for the given values.
 
         Args:
@@ -67,18 +71,30 @@ class BollingerBandsCalculator:
             )
             .assign(value_ff=lambda d: d["value"].ffill())
             .assign(
-                ma=lambda d: d["value_ff"].rolling(**self.rolling_kwargs).mean(),
-                sd=lambda d: d["value_ff"].rolling(**self.rolling_kwargs).std(),
+                ma=lambda d: d["value_ff"]
+                .rolling(**cast("Any", self.rolling_kwargs))
+                .mean(),
+                sd=lambda d: d["value_ff"]
+                .rolling(**cast("Any", self.rolling_kwargs))
+                .std(),
             )
             .assign(
                 lower_bb=lambda d: (d["ma"] - d["sd"] * self.sd_multiplier),
                 upper_bb=lambda d: (d["ma"] + d["sd"] * self.sd_multiplier),
-                residual=lambda d: ((d["value_ff"] - d["ma"]) / d["sd"]).fillna(0),
+                residual=lambda d: (d["value_ff"] - d["ma"]) / d["sd"],
             )
             .assign(
-                signal=lambda d: np.where(
-                    d["residual"] > 0, np.floor(d["residual"]), np.ceil(d["residual"])
-                ).astype(int)
+                signal=lambda d: d["residual"]
+                .apply(
+                    lambda x: (
+                        0
+                        if pd.isna(x)
+                        else int(np.floor(x) if x > 0 else np.ceil(x))
+                        if abs(x - round(x)) > FLOAT_TOLERANCE
+                        else round(x)
+                    )
+                )
+                .astype(int)
             )
             .drop(columns=["value_ff", "residual"])
         )

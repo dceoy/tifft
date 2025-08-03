@@ -7,6 +7,7 @@ security's price.
 
 import logging
 import os
+from collections.abc import Sequence
 from pprint import pformat
 from typing import Any
 
@@ -55,7 +56,7 @@ class MacdCalculator:
         self.ewm_kwargs = {"adjust": False, **kwargs}
         self.__logger.debug("vars(self):%s%s", os.linesep, pformat(vars(self)))
 
-    def calculate(self, values: pd.Series | list) -> pd.DataFrame:
+    def calculate(self, values: pd.Series | Sequence[int | float]) -> pd.DataFrame:
         """Calculate MACD indicator for the given values.
 
         Args:
@@ -96,6 +97,7 @@ class MacdCalculator:
                 .mask(d["macd_ema_delta"] > 0, 1)
                 .mask((d["macd_ema_delta"] < 0) & (d["macd"] < 0), -2)
                 .mask(d["macd_ema_delta"] < 0, -1)
+                .fillna(0)
                 .astype(int)
             )
             .drop(columns=["value_ff", "macd_ema_delta"])

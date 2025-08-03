@@ -57,7 +57,7 @@ Arguments:
 import logging
 import os
 
-from docopt import docopt
+from docopt import docopt  # type: ignore[reportMissingTypeStubs]
 
 from . import __version__
 from .datareader import calculate_indicator_for_remote_data, fetch_remote_data
