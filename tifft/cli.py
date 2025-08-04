@@ -75,7 +75,7 @@ def main() -> None:
     logger.debug("args:%s%s", os.linesep, args)
     if args["history"]:
         fetch_remote_data(
-            name=args["<n>"],
+            name=args["<name>"],
             data_source=args["--data-source"],
             api_key=args["--api-key"],
             start_date=args["--start"],
@@ -86,7 +86,7 @@ def main() -> None:
         )
     elif args["macd"]:
         calculate_indicator_for_remote_data(
-            name=args["<n>"][0] if args.get("<n>") else args["<name>"][0],
+            name=args["<name>"][0],
             data_source=args["--data-source"],
             api_key=args["--api-key"],
             start_date=args["--start"],
@@ -101,7 +101,7 @@ def main() -> None:
         )
     elif args["bb"]:
         calculate_indicator_for_remote_data(
-            name=args["<n>"][0] if args.get("<n>") else args["<name>"][0],
+            name=args["<name>"][0],
             data_source=args["--data-source"],
             api_key=args["--api-key"],
             start_date=args["--start"],
@@ -115,7 +115,7 @@ def main() -> None:
         )
     elif args["rsi"]:
         calculate_indicator_for_remote_data(
-            name=args["<n>"][0] if args.get("<n>") else args["<name>"][0],
+            name=args["<name>"][0],
             data_source=args["--data-source"],
             api_key=args["--api-key"],
             start_date=args["--start"],

@@ -21,7 +21,7 @@ def _get_default_docopt_args() -> dict[str, bool | list[str] | str | None]:
         "macd": False,
         "bb": False,
         "rsi": False,
-        "<n>": [],
+        "<name>": [],
         "--data-source": "fred",
         "--api-key": None,
         "--start": None,
@@ -92,7 +92,7 @@ class TestMain:
             "macd": False,
             "bb": False,
             "rsi": False,
-            "<n>": ["SPY", "QQQ"],
+            "<name>": ["SPY", "QQQ"],
             "--data-source": "yahoo",
             "--api-key": None,
             "--start": "2021-01-01",
@@ -135,7 +135,7 @@ class TestMain:
         args = _get_default_docopt_args()
         args.update({
             "macd": True,
-            "<n>": ["SPY"],
+            "<name>": ["SPY"],
             "--data-source": "yahoo",
             "--start": "2021-01-01",
             "--end": "2021-12-31",
@@ -167,7 +167,7 @@ class TestMain:
         args = _get_default_docopt_args()
         args.update({
             "bb": True,
-            "<n>": ["SPY"],
+            "<name>": ["SPY"],
             "--data-source": "yahoo",
             "--max-rows": "30",
             "--info": True,
@@ -197,7 +197,7 @@ class TestMain:
         args = _get_default_docopt_args()
         args.update({
             "rsi": True,
-            "<n>": ["QQQ"],
+            "<name>": ["QQQ"],
             "--api-key": "test-api-key",
             "--max-rows": "100",
             "--drop-na": True,
