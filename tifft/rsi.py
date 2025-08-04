@@ -70,7 +70,7 @@ class RsiCalculator:
                 if isinstance(values, pd.Series)
                 else pd.DataFrame({"value": values})
             )
-            .assign(ff_diff=lambda d: d["value"].fillna(method='ffill').diff())
+            .assign(ff_diff=lambda d: d["value"].fillna(method="ffill").diff())
             .assign(
                 upward=lambda d: d["ff_diff"].mask(d["ff_diff"] < 0, 0),
                 downward=lambda d: d["ff_diff"].mask(d["ff_diff"] > 0, 0) * -1,
