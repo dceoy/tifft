@@ -3,15 +3,28 @@ tifft
 
 Technical Indicators for Financial Trading
 
-[![Test](https://github.com/dceoy/tifft/actions/workflows/test.yml/badge.svg)](https://github.com/dceoy/tifft/actions/workflows/test.yml)
-[![Upload Python Package](https://github.com/dceoy/tifft/actions/workflows/python-publish.yml/badge.svg)](https://github.com/dceoy/tifft/actions/workflows/python-publish.yml)
-[![CI to Docker Hub](https://github.com/dceoy/tifft/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/dceoy/tifft/actions/workflows/docker-publish.yml)
+[![CI/CD](https://github.com/dceoy/tifft/actions/workflows/ci.yml/badge.svg)](https://github.com/dceoy/tifft/actions/workflows/ci.yml)
 
 Installation
 ------------
 
+Using pip:
 ```sh
 $ pip install -U tifft
+```
+
+Using uv:
+```sh
+$ uv pip install tifft
+```
+
+For development with uv:
+```sh
+$ git clone https://github.com/dceoy/tifft.git
+$ cd tifft
+$ uv venv
+$ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+$ uv pip install -e .
 ```
 
 Docker image
